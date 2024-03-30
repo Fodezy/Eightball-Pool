@@ -23,10 +23,11 @@ $(document).ready(function(){
         dataType: 'html',
         success: function(response)
         {
+            
             $('#poolTable').html(response);
             // var svg = document.querySelector('#lines');
 
-            $('#poolTable').find('circle').on('mouseover', function(e)
+            $('#poolTable').on('mouseover', 'circle', function(e)
             {
                 var id = $(this).attr('id');
                 var cx = $(this).attr('cx');
@@ -34,8 +35,8 @@ $(document).ready(function(){
 
                 if(id == 0)
                 {
-                    $('#poolTable').addClass('inactive');
-                    $('#lines').addClass('active');
+                    // $('#poolTable').addClass('inactive');
+                    // $('#lines').addClass('active');
                     // alert("HIT")
                     // alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
                     cueFound = 1;
@@ -59,28 +60,22 @@ $(document).ready(function(){
                     cueX = transformedPoint.x - 408;
                     cueY = transformedPoint.y + 711;
 
-                    // 350
-                    // 
-
-                    // cueX = 525;
-                    // 355 + 460;
-                    // cueY = 1370;
-                    // 1185;
-
                     alert("X: " + cueX + "\ny: " + cueY);
 
                     $('#poolTable').css('zIndex', -1); // Use .css method to change z-index
-                    // alert("Hit")
                     $('#lines').css('zIndex', 1);
                     // alert("Hit")
-
 
                     svg = document.querySelector("#lines");
                     // svg = 0;
                     setDrawing(svg)
 
+                    // $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
+                    // // alert("Hit")
+                    // $('#lines').css('zIndex', -1);
+
                 } else {
-                    // alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
+                    alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
                 }
             });
         }
@@ -170,114 +165,137 @@ function setDrawing (svg) {
         return element;
     }
 
-    svg.addEventListener("mouseup", (e) => 
-    {
-        if(lineEl)
-        {   
-            // let distance = {};
-            let distanceVel = {}
-            alert("HIT")
-            distanceVel = velocity(e);
-            alert("HIT")
-            distance = distanceVel;
-            lineEl.remove();
-
+    function postCalVel(data) {
+        return new Promise((resolve, reject) => {
             $.ajax({
                 url: '/calcVel',
                 type: 'POST',
                 contentType: "application/json",
                 data: JSON.stringify ({
-                    velX: distanceVel.x,
-                    velY: distanceVel.y
+                    velX: data.x,
+                    velY: data.y
                 }),
-                success: function(data, status) {
-                    alert("Data: " + data + "\nStatus: " + status);
-                }
+                success: function(response, status) {
+                    resolve(response)
+                },
+                error: function (xhr, status, error) {
+                    alert("postCalcVel ERROR: " + error)
+                    reject(error); // Reject the promise on error
+            }
             });
+        });
+    }
 
-            // document.getElementById('poolTable').style.zIndex = 1;
-            document.getElementById('lines').style.zIndex = -1;
-
-            // alert("Distance:\n x: " + distance.x + " |  y: " + distance.y);
-            
-            
+    function getSVGs() {
+        return new Promise((resolve, reject) => {
             $.ajax({
                 url: '/svgFiles',
-                // cache: false,
                 type: 'GET',
                 dataType: 'html',
                 success: function(response){
 
                     var splitString = response.split(":,:");
-
                     var index = 0;
-
-                    // $('#poolTable').remove();
 
                     function displayPart() {
                         if(index < splitString.length)
                         {
                             $('#poolTable').html(splitString[index]);
+                            if(index == splitString.length - 1)
+                            {
+                                resolve(splitString[index])
+                            }
+
                             index++;
                             setTimeout(displayPart, 10);
                         }
                     }
-
                     displayPart();
                 },
                 error: function(xhr, status, error) {
-                    alert("Error:", status, error);
+                    alert("getSVG get Error : ", status, error);
                     // Optionally, you can display an error message to the user
-                    $('#content').html("<p>Error: Unable to load SVG file.</p>");
+                    reject(error)
                 }
             });
+        })
+        
+    }
 
+    function writeNewStarter(stringSVG) {
+        $.ajax({
+                url: '/writeStarter',
+                type: 'POST',
+                dataType: 'html',
+                data: stringSVG,
+                success: function(response) {
+                    alert("Success: " + response)
+
+                },
+                error: function(status, error){
+                    alert(stringSVG)
+                    alert('postWrite Error: ', status, error);
+                }
+            })
+    }
+
+    svg.addEventListener("mouseup", (e) => 
+    {
+        if(lineEl)
+        {   
             lineEl.remove();
-            $('#content').html('table-1.svg')
+            let distanceVel = velocity(e);
 
-
+            postCalVel( {x: distanceVel.x, y: distanceVel.y} )       
+            .then(response => {
+                getSVGs().then(lastPart => {
+                    writeNewStarter(lastPart);
+                }).catch(error => {
+                    alert("writeSVGStarter Error: ",+ error);
+                });
+            })
+            .catch(error => {
+                alert("getSVG ERROR: " + error)
+            });
+            
+            $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
+            $('#lines').css('zIndex', -1);
             lineEl = null;
             objLine = {};
-
-            // call helper fucntion.
-                // function should create all svg files based on the shot velocity
-            
-            // 
         }
     });
 
     svg.addEventListener("mouseout", (e) => 
     {
-        if(lineEl)
-        {   
-            lineEl.remove();
-            let distanceVel = {}
-            distanceVel = velocity(e);
-            distance = distanceVel;
+        // if(lineEl)
+        // {   
+        //     lineEl.remove();
+        //     let distanceVel = {}
+        //     distanceVel = velocity(e);
+        //     distance = distanceVel;
 
-            $.ajax({
-                url: '/calcVel',
-                type: 'POST',
-                contentType: "application/json",
-                data: JSON.stringify ({
-                    velX: distanceVel.x,
-                    velY: distanceVel.y
-                }),
-                sucsess: function(data, status) {
-                    alert("Data: " + data + "\nStatus: " + status);
-                }
-            });
+        //     $.ajax({
+        //         url: '/calcVel',
+        //         type: 'POST',
+        //         contentType: "application/json",
+        //         data: JSON.stringify ({
+        //             velX: distanceVel.x,
+        //             velY: distanceVel.y
+        //         }),
+        //         sucsess: function(data, status) {
+        //             // alert("Data: " + data + "\nStatus: " + status);
+        //         }
+        //     });
 
-            document.getElementById('poolTable').style.zIndex = -1;
-            document.getElementById('lines').style.zIndex = 
-1;
-            // alert("Distance:\n x: " + distance.x + " |  y: " + distance.y);
+        //     document.getElementById('poolTable').style.zIndex = -1;
+        //     document.getElementById('lines').style.zIndex = 1;
+        //     // alert("Distance:\n x: " + distance.x + " |  y: " + distance.y);
             
 
-            // newSVG();
-            lineEl = null;
-            objLine = {};
-        }
+        //     // newSVG();
+        //     lineEl = null;
+        //     objLine = {};
+        // }
     });
 }   
     // // code snippet credited to [https://stackoverflow.com/questions/53847463/i-am-drawing-line-using-svg-and-jquery-ui-i-want-to-draw-it-in-all-directions-bu]

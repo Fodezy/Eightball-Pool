@@ -361,6 +361,7 @@ class Table( phylib.phylib_table ):
                 table = table.segment()  # segment the table
                 if table is None:
                 # think i need to add one more addition to the database
+                    print(newTable)
                     break
 
                 # calculate the frameRate
