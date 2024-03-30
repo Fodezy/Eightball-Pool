@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Ball Click</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="animate.js" async></script>
+    <script src="poolTable.js"></script>
+    <script>
+          track = false;
+      function trackon()
+      {
+        track = true;
+        alert( track );
+      } 
+
+      function trackit( event )
+      {
+	if (track)
+	{
+	  $('#valx').remove();
+	  $('#valy').remove();
+	  $('<div id="valx">'+event.pageX+'</div>').appendTo("#x");
+	  $('<div id="valy">'+event.pageY+'</div>').appendTo("#y");
+	}
+      }
+
+    </script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #container {
+            position: relative;
+            width: 1050px; /* 1.5 times the pool table's width */
+            height: 2062.5px; /* 1.5 times the pool table's height */
+        }
+
+        #poolTable {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 700px;
+            height: 1375px;
+            transform: translate(-50%, -50%) rotate(90deg);
+            /* z-index: 1; */
+        }
+
+        .fullPane {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1050px;
+            height: 2062.5px;
+            transform: translate(-50%, -50%) rotate(90deg);
+            border: 4px solid black;
+            /* background-color: rgba(53, 112, 131, 0.2); */
+            /* z-index: -1; */
+        }
+
+        #lines {
+            border: 1px solid;
+        }
+        line {
+            stroke: rgba(0, 0, 0, 0.78);
+            stroke-width: 5;
+            pointer-events: none;
+        }
+
+        .buttonTL {
+            position: absolute;
+            top: 10px;
+            left: 10px
+        }
+
+        .buttonBM {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translate(-50%);
+        } 
+
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 700px;
+            height: 1375px;
+            transform: translate(-50%, -50%) rotate(90deg);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <svg id="lines" class="fullPane""></svg>
+
+        <div id="poolTableCont">
+            <div id="poolTable" onmousemove="trackit(event);" ></div>
+
+        </div>
+    </div>
+
+    <object id="content" ></object>
+
+    <button class="buttonTL" onclick="trackon()">Top Left Button</button>
+
+    <button class="buttonBM">Bottom Center Button</button>
+    <!-- <div id="x" style="z-index: 3; position: relative;" >x=</div>
+    <div id="y" style="z-index: 3; position: absolute;">  y=</div> -->
+
+
+</body>
+</html>
