@@ -108,11 +108,7 @@ class AnimateShot():
 
         with open("table-2.svg", "a") as fp:
             fp.write(svgContent)
-        # svgContent = " :,: \n".join(svgContent)
 
-        # with open("table-1.svg", "a") as fp:
-        #     for line in svgContent:
-        #         fp.write(line + "\n")
 
 
 

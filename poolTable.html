@@ -39,30 +39,28 @@
 
         #container {
             position: relative;
-            width: 1050px; /* 1.5 times the pool table's width */
-            height: 2062.5px; /* 1.5 times the pool table's height */
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #poolTable {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 700px;
-            height: 1375px;
-            transform: translate(-50%, -50%) rotate(90deg);
-            /* z-index: 1; */
+            width: 65vh;
+            height: 65vh;
+            transform: translate(10vw, 5vh) rotate(90deg);
         }
 
         .fullPane {
+            width: calc(65vh * 1.5); /* 1.5 times the pool table's width */
+            height: calc(65vw * 1.5); /* 1.5 times the pool table's height */
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 1050px;
-            height: 2062.5px;
+            /* Adjusting transform to ensure proper centering after rotation */
             transform: translate(-50%, -50%) rotate(90deg);
             border: 4px solid black;
-            /* background-color: rgba(53, 112, 131, 0.2); */
-            /* z-index: -1; */
         }
 
         #lines {
@@ -96,26 +94,42 @@
             transform: translate(-50%, -50%) rotate(90deg);
             z-index: -1;
         }
+
+        #x, #y {
+    z-index: 3;
+    position: fixed;
+    bottom: 0;
+}
+
+#x {
+    left: 0;
+}
+
+#y {
+    left: 60px; /* Adjust this value so it doesn't overlap with #x */
+}
+
     </style>
 </head>
 <body>
 
-    <div id="container">
+    <div id="container"  onmousemove="trackit(event);">
         <svg id="lines" class="fullPane""></svg>
 
         <div id="poolTableCont">
-            <div id="poolTable" onmousemove="trackit(event);" ></div>
+            <div id="poolTable" ></div>
 
         </div>
     </div>
 
     <object id="content" ></object>
 
-    <button class="buttonTL" onclick="trackon()">Top Left Button</button>
+    <!-- <button class="buttonTL" onclick="trackon()">Top Left Button</button> -->
 
-    <button class="buttonBM">Bottom Center Button</button>
-    <!-- <div id="x" style="z-index: 3; position: relative;" >x=</div>
-    <div id="y" style="z-index: 3; position: absolute;">  y=</div> -->
+    <button class="buttonBM" onclick="trackon()">Bottom Center Button</button>
+    <div id="x" style="z-index: 3; position: fixed; bottom: 0; left: 0;">X: <span id="valx">0</span></div>
+    <div id="y" style="z-index: 3; position: fixed; bottom: 0; left: 50px;">Y: <span id="valy">0</span></div>
+
 
 
 </body>

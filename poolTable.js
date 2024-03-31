@@ -12,11 +12,6 @@ $(document).ready(function(){
     var lineEl = null;
     
 
-
-    
-    // $('#poolTable').on('load', function() {
-    //     var svgDoc = $('#poolTable')[0].contentDocument;
-    //     var svgRoot = svgDoc.documentElement;
     $.ajax({
         url: '/table-1.svg',
         type: 'GET',
@@ -26,60 +21,47 @@ $(document).ready(function(){
             
             $('#poolTable').html(response);
             // var svg = document.querySelector('#lines');
-
-            $('#poolTable').on('mouseover', 'circle', function(e)
-            {
-                var id = $(this).attr('id');
-                var cx = $(this).attr('cx');
-                var cy = $(this).attr('cy');
-
-                if(id == 0)
-                {
-                    // $('#poolTable').addClass('inactive');
-                    // $('#lines').addClass('active');
-                    // alert("HIT")
-                    // alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
-                    cueFound = 1;
-
-                    var bbox = this.getBBox();
-                    // alert("Hit")   
-                    var svgElement = $('#poolTable svg').get(0);
-                    // alert("Hit")   
-
-
-                    var point = svgElement.createSVGPoint();
-                    // alert("Hit")
-                    point.x = bbox.x + bbox.width / 2;
-                    point.y = bbox.y + bbox.height  / 2;
-
-                    // alert("X: " + point.x + "\ny: " + point.y);
-
-                    var transformedPoint = point.matrixTransform(svgElement.getScreenCTM());
-                    // alert("Hit")
-
-                    cueX = transformedPoint.x - 408;
-                    cueY = transformedPoint.y + 711;
-
-                    alert("X: " + cueX + "\ny: " + cueY);
-
-                    $('#poolTable').css('zIndex', -1); // Use .css method to change z-index
-                    $('#lines').css('zIndex', 1);
-                    // alert("Hit")
-
-                    svg = document.querySelector("#lines");
-                    // svg = 0;
-                    setDrawing(svg)
-
-                    // $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
-                    // // alert("Hit")
-                    // $('#lines').css('zIndex', -1);
-
-                } else {
-                    alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
-                }
-            });
         }
     });
+
+$('#poolTable').on('mouseover', 'circle', function(e){
+
+    // alert("HIT")
+    var id = $(this).attr('id');
+    var cx = $(this).attr('cx');
+    var cy = $(this).attr('cy');
+    newShot(id)
+})
+
+
+function newShot(id) 
+{
+    
+    // {
+        alert("NEWSHOT id: " + id)
+
+        if(id == 0)
+        {
+            cueFound = 1;
+            var svgElement = $('#poolTable svg').get(0); // Get the SVG element
+            // var pt = svgElement.createSVGPoint();
+            // pt.x = e.clientX;
+            // pt.y = e.clientY;
+            // var transformedPoint = pt.matrixTransform(svgElement.getScreenCTM().inverse());
+
+            cueX = 629;
+            cueY = 1589;
+            $('#poolTable').css('zIndex', -1); // Use .css method to change z-index
+            $('#lines').css('zIndex', 1);
+            // alert("Hit")
+            svg = document.querySelector("#lines");
+            // svg = 0;
+            setDrawing(svg);
+        } else {
+            alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
+        }
+    // });
+}
     
 
 
@@ -250,6 +232,8 @@ function setDrawing (svg) {
             .then(response => {
                 getSVGs().then(lastPart => {
                     writeNewStarter(lastPart);
+                    $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
+                    $('#lines').css('zIndex', -1);
                 }).catch(error => {
                     alert("writeSVGStarter Error: ",+ error);
                 });
@@ -258,8 +242,8 @@ function setDrawing (svg) {
                 alert("getSVG ERROR: " + error)
             });
             
-            $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
-            $('#lines').css('zIndex', -1);
+
+
             lineEl = null;
             objLine = {};
         }
