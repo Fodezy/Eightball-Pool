@@ -16,8 +16,7 @@ import poolTable
 import json
 
 
-pTable = poolTable.SetTablePos()
-table = pTable.createTable()
+
 
 
 # handler for our web-server - handles both GET and POST requests
@@ -118,11 +117,11 @@ class MyHandler( BaseHTTPRequestHandler ):
 
             with open('table-2.svg', 'r') as fp:
                 content = fp.read()
-
-            # contentSplit = content.split(':,:')
+                # contentSplit = content.split(':,:')
 
             # for content in contentSplit:
                 # print(content)
+            
 
             self.send_response(200)
             # self.send_header("Content-type", "image/svg+xml") #text/html
@@ -132,6 +131,8 @@ class MyHandler( BaseHTTPRequestHandler ):
 
             self.wfile.write( bytes(content, "utf-8") )
             fp.close()
+
+
         
         elif parsed.path.endswith(".js"):
             # Assuming your JS files are stored in the same directory as your Python script
@@ -397,8 +398,11 @@ class MyHandler( BaseHTTPRequestHandler ):
 
                 print(velx, " | ", vely)
 
+
                 # anShot.getTable(table)
-                game.shoot("Game 1", "Eric", table, velx, vely)
+                # print(table)
+                table = game.shoot("Game 1", "Eric", table, velx, vely)
+                print(table)
 
                 # r = Retreive()
                 # vel = r.calculateVel(velx, vely)
@@ -416,6 +420,29 @@ class MyHandler( BaseHTTPRequestHandler ):
                 self.send_error(400, 'Invalid JSON data')
                 print(e.msg)
 
+        elif parsed.path in ['/writeStarter']:
+            try: 
+                content_length = int(self.headers['Content-Length'])
+                svg = self.rfile.read(content_length).decode('utf-8')
+
+                # print(svg)
+
+                with open(f"table-1.svg", "w") as file:
+                    file.write(svg);
+
+                fp = open("table-2.svg", "w")
+                fp.write("")
+                fp.close()
+
+                self.send_response(200)
+                self.send_header('Content-type', 'html')
+                self.end_headers()
+                self.wfile.write(b'SVG script received successfully')
+            except:
+                self.send_error(400, 'Invalid JSON data')
+                print(e.msg)
+
+        
             
         else:
             # generate 404 for POST requests that aren't the file above
@@ -428,6 +455,9 @@ if __name__ == "__main__":
     # print(table)
 
     anShot = poolTable.AnimateShot()
+    pTable = poolTable.SetTablePos()
+
+    table = pTable.createTable()
     game = anShot.initDB(table)
     # anShot.getTable()
 

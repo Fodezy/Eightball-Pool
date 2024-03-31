@@ -361,7 +361,7 @@ class Table( phylib.phylib_table ):
                 table = table.segment()  # segment the table
                 if table is None:
                 # think i need to add one more addition to the database
-                    print(newTable)
+                    # print(newTable)
                     break
 
                 # calculate the frameRate
@@ -417,7 +417,12 @@ class Table( phylib.phylib_table ):
 
                 # segment the rolling table 
                 rollTable = rollTable.segment() 
+            pTable.getTable(rollTable)
+
+            print(rollTable)
+
             fp.close()
+            return rollTable
                         # amt += 1
                         # cond = 1
                     # print("ELSE TABLES amt: ", amt)
@@ -821,4 +826,5 @@ class Game():
         
         # shotID = self.db.newShot(gameName, playerName)
 
-        table.cueBall(table, xvel, yvel, 1)
+        table = table.cueBall(table, xvel, yvel, 1)
+        return table
