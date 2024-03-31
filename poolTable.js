@@ -10,6 +10,8 @@ $(document).ready(function(){
     var mPos = {};
     var objLine = {};
     var lineEl = null;
+
+    var gameOver = 0
     
 
     $.ajax({
@@ -28,38 +30,58 @@ $('#poolTable').on('mouseover', 'circle', function(e){
 
     // alert("HIT")
     var id = $(this).attr('id');
-    var cx = $(this).attr('cx');
-    var cy = $(this).attr('cy');
-    newShot(id)
+    // var cx = $(this).attr('cx');
+    // var cy = $(this).attr('cy');
+    newShot(id, e)
 })
 
 
-function newShot(id) 
+
+
+function newShot(id, e) 
 {
     
     // {
-        alert("NEWSHOT id: " + id)
+        // alert("NEWSHOT id: " + id)
 
         if(id == 0)
         {
             cueFound = 1;
             var svgElement = $('#poolTable svg').get(0); // Get the SVG element
-            // var pt = svgElement.createSVGPoint();
-            // pt.x = e.clientX;
-            // pt.y = e.clientY;
-            // var transformedPoint = pt.matrixTransform(svgElement.getScreenCTM().inverse());
 
-            cueX = 629;
-            cueY = 1589;
+
+            // cueX = 629;
+            // cueY = 1589;
+
+
             $('#poolTable').css('zIndex', -1); // Use .css method to change z-index
             $('#lines').css('zIndex', 1);
             // alert("Hit")
             svg = document.querySelector("#lines");
-            // svg = 0;
+
+
+
+            let pos = svg.createSVGPoint();
+            // alert("HIT")
+            pos.x = e.clientX;
+            pos.y = e.clientY;
+            let ctm = svg.getScreenCTM().inverse();
+
+            // alert("HIT")
+            pos = pos.matrixTransform(ctm);
+
+            cueX = pos.x;
+            cueY = pos.y;
+
+            // alert("Cuex: " + cueX + "\nCueY: " + cueY)
+
             setDrawing(svg);
-        } else {
-            alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
+        } else if (gameOver == 8) {
+            alert("GAME OVER")
         }
+            else {
+                alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
+            }
     // });
 }
     
@@ -95,7 +117,6 @@ function setDrawing (svg) {
         pos.y = ev.clientY;
         let ctm = svg.getScreenCTM().inverse();
         pos = pos.matrixTransform(ctm);
-
 
         return pos;
     }
@@ -189,13 +210,13 @@ function setDrawing (svg) {
                             }
 
                             index++;
-                            setTimeout(displayPart, 10);
+                            setTimeout(displayPart, 15);
                         }
                     }
                     displayPart();
                 },
                 error: function(xhr, status, error) {
-                    alert("getSVG get Error : ", status, error);
+                    alert("getSVG get Error : " +  error);
                     // Optionally, you can display an error message to the user
                     reject(error)
                 }
@@ -211,7 +232,7 @@ function setDrawing (svg) {
                 dataType: 'html',
                 data: stringSVG,
                 success: function(response) {
-                    alert("Success: " + response)
+                    // alert("Success: " + response)
 
                 },
                 error: function(status, error){
@@ -219,6 +240,21 @@ function setDrawing (svg) {
                     alert('postWrite Error: ', status, error);
                 }
             })
+    }
+
+    function isGameOver() {
+        $.ajax({
+            url: '/gameOver',
+            type: 'GET',
+            dataType: 'json',
+            data: num,
+            success: function(response) {
+                gameOver =  response.num
+            },
+            error: function(error, status) {
+                alert("ERROR")
+            }
+        })
     }
 
     svg.addEventListener("mouseup", (e) => 
@@ -234,6 +270,8 @@ function setDrawing (svg) {
                     writeNewStarter(lastPart);
                     $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
                     $('#lines').css('zIndex', -1);
+                    // isGameOver()
+                    
                 }).catch(error => {
                     alert("writeSVGStarter Error: ",+ error);
                 });
@@ -242,8 +280,6 @@ function setDrawing (svg) {
                 alert("getSVG ERROR: " + error)
             });
             
-
-
             lineEl = null;
             objLine = {};
         }

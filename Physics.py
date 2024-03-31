@@ -334,7 +334,11 @@ class Table( phylib.phylib_table ):
             cueBall.obj.rolling_ball.vel.y = yVel
 
 
-            speed = math.sqrt(xVel**2 + yVel**2)
+            speed = math.sqrt((xVel*xVel) + (yVel*yVel))
+            # speed = math.sqrt((xVel**2) + (yVel**2))
+            # print(xVel)
+            # print(yVel)
+            # print(speed)
 
             acc_x, acc_y = 0, 0
 
@@ -391,6 +395,8 @@ class Table( phylib.phylib_table ):
                         pTable.getTable(newTable)
                         frameCounter = frameCounter + 1;
 
+                        # add a loop to check for first ball sunk cant be 8 or 0
+
 
                         # tableID = db.writeTable(newTable)
                         # db.setTableShot(tableID, shotID)
@@ -418,8 +424,7 @@ class Table( phylib.phylib_table ):
                 # segment the rolling table 
                 rollTable = rollTable.segment() 
             pTable.getTable(rollTable)
-
-            print(rollTable)
+            # print(rollTable)
 
             fp.close()
             return rollTable

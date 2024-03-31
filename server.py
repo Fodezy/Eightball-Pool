@@ -15,9 +15,7 @@ import poolTable
 
 import json
 
-
-
-
+global status
 
 # handler for our web-server - handles both GET and POST requests
 class MyHandler( BaseHTTPRequestHandler ):
@@ -146,7 +144,19 @@ class MyHandler( BaseHTTPRequestHandler ):
                     self.wfile.write(bytes(content, "utf-8"))
                     
             except FileNotFoundError:
-                self.send_error(404, "File Not Found: %s" % parsed.path)       
+                self.send_error(404, "File Not Found: %s" % parsed.path)     
+
+        elif parsed.path in ['/gameOver']:  
+
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.send_header()
+            response = {
+                'num': status
+            }
+            self.wfile.write(json.dumps(response).encode('utf-8'))
+
+
         else:
             # generate 404 for GET requests that aren't the 3 files above
             self.send_response( 404 );
@@ -157,6 +167,7 @@ class MyHandler( BaseHTTPRequestHandler ):
         global table
         global anShot
         global game
+        global gLogic
         # hanle post request
         # parse the URL to get the path and form data
         parsed  = urlparse( self.path );
@@ -398,11 +409,20 @@ class MyHandler( BaseHTTPRequestHandler ):
 
                 print(velx, " | ", vely)
 
-
                 # anShot.getTable(table)
                 # print(table)
+
+                gLogic.shotStatus(table)
                 table = game.shoot("Game 1", "Eric", table, velx, vely)
-                print(table)
+                status = gLogic.afterSatus(table)
+
+                # print(table)
+                # print(table)
+
+                # gLogic.isBallSunk()
+                # print(table)
+                
+
 
                 # r = Retreive()
                 # vel = r.calculateVel(velx, vely)
@@ -419,6 +439,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             except json.JSONDecodeError as e:
                 self.send_error(400, 'Invalid JSON data')
                 print(e.msg)
+
 
         elif parsed.path in ['/writeStarter']:
             try: 
@@ -456,9 +477,11 @@ if __name__ == "__main__":
 
     anShot = poolTable.AnimateShot()
     pTable = poolTable.SetTablePos()
+    gLogic = poolTable.GameLogic()
 
     table = pTable.createTable()
     game = anShot.initDB(table)
+    gLogic.setCurrentPlayer(0)
     # anShot.getTable()
 
     httpd = HTTPServer( ( 'localhost', int(sys.argv[1]) ), MyHandler );

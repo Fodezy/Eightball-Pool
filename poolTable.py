@@ -109,6 +109,131 @@ class AnimateShot():
         with open("table-2.svg", "a") as fp:
             fp.write(svgContent)
 
+class GameLogic():
+
+    def __init__(self):
+        self.ballID = []
+        self.newBallIDS = []
+        self.beforeBallCount = 0
+        self.afterBallCount = 0
+
+        self.playerOne = 0 
+        self.playerOneRange = -1
+        self.playerOneBallCount = 7
+
+        self.playerTwo = 1
+        self.playerTwoRange = -1
+        self.playerTwoBallCount = 7
+
+        self.currrentPlayerID = 0
+
+    def setCurrentPlayer(self, playerID):
+        self.currentPlayerID = playerID
+
+    # def getCurrentPlayer(self):
+    #     return self.currentPlayerID
+
+
+    def shotStatus(self, table):
+        ballID = []
+
+        for obj in table:
+            if obj is not None:
+                if isinstance(obj, Physics.RollingBall):
+                    self.ballID.append(obj.obj.still_ball.number)
+
+                elif isinstance(obj, Physics.StillBall):
+                    self.ballID.append(obj.obj.rolling_ball.number)
+
+    def afterSatus(self, table):
+        isCueBallSunk = False
+        isEghtBallSunk = False
+
+        for obj in table:
+            if obj is not None:
+                if isinstance(obj, Physics.RollingBall):
+                    self.newBallIDS.append(obj.obj.still_ball.number)
+
+                elif isinstance(obj, Physics.StillBall):
+                    self.newBallIDS.append(obj.obj.rolling_ball.number)
+
+        beforeLen = len(self.ballID)
+        afteridlen = len(self.newBallIDS)
+
+        diffrence = beforeLen - afteridlen
+
+
+        if diffrence > 0:
+            # add helper function
+            isCueBallSunk = self.isCueBallSunk(beforeLen, afteridlen)
+            isEigthBallSunk = self.isEigthBallSunk(afteridlen)
+
+            if isEigthBallSunk:
+                return 8
+                # end game and determine winner
+
+            # if isCueBallSunk:
+                # re add cueball to table
+                # if diffrence == 1:
+                    # switch player turn
+                # else set switch 
+
+                # if currentPlayer ball sunk current player turn again
+                    # update ball count for both player
+                
+
+
+
+    def isCueBallSunk(self, beforeLen, afterLen):
+
+        print(self.newBallIDS)
+
+        for j in range(0, afterLen):
+            if self.newBallIDS[j] == 0:
+                print("CueBall found: ", self.newBallIDS[j])
+                return False
+            else:
+                print("CueBall not found: ")
+        
+        return True
+
+    def isEigthBallSunk(self, afterLen):
+
+        for i in range(0, afterLen):
+            if self.newBallIDS[i] == 8:
+                print("8 ball found: ", self.newBallIDS[i])
+                return False
+            else:
+                print("8 ball not found: ")
+        
+        return True
+
+
+    # def addCueBall():
+
+    # def playerTurn(self, playerNum):
+
+
+    def setRange(self, playerID, playerRange):
+        if playerID == 0:
+            self.playerOneRange = playerRange
+        elif playerID == 1:
+            self.playerTwoRange = playerRange
+
+    def ballRange(self, playerRange):
+        counter = 0
+        for i in range(len(newBallIDS)):
+            if playerRange == 0:
+                if newBallIDS[i] > 0 and newBallIDS[i] <= 7:
+                    counter += 1
+            elif playerRange == 1:
+                if newBallIDS[i] > 8 and newBallIDS[i] <= 15:
+                    counter += 1
+
+        return counter
+
+
+
 
 
 
