@@ -242,14 +242,15 @@ function setDrawing (svg) {
             })
     }
 
-    function isGameOver() {
+    function isGameOver(num) {
         $.ajax({
             url: '/gameOver',
-            type: 'GET',
+            type: 'POST',
             dataType: 'json',
-            data: num,
+            data: JSON.stringify({num: num}),
             success: function(response) {
-                gameOver =  response.num
+                alert(response.num)
+                // gameOver =  response.num
             },
             error: function(error, status) {
                 alert("ERROR")
@@ -259,6 +260,7 @@ function setDrawing (svg) {
 
     svg.addEventListener("mouseup", (e) => 
     {
+        var num = 0
         if(lineEl)
         {   
             lineEl.remove();
@@ -270,7 +272,7 @@ function setDrawing (svg) {
                     writeNewStarter(lastPart);
                     $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
                     $('#lines').css('zIndex', -1);
-                    // isGameOver()
+                    isGameOver(num)
                     
                 }).catch(error => {
                     alert("writeSVGStarter Error: ",+ error);

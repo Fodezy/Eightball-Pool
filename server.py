@@ -15,7 +15,7 @@ import poolTable
 
 import json
 
-global status
+
 
 # handler for our web-server - handles both GET and POST requests
 class MyHandler( BaseHTTPRequestHandler ):
@@ -146,17 +146,6 @@ class MyHandler( BaseHTTPRequestHandler ):
             except FileNotFoundError:
                 self.send_error(404, "File Not Found: %s" % parsed.path)     
 
-        elif parsed.path in ['/gameOver']:  
-
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.send_header()
-            response = {
-                'num': status
-            }
-            self.wfile.write(json.dumps(response).encode('utf-8'))
-
-
         else:
             # generate 404 for GET requests that aren't the 3 files above
             self.send_response( 404 );
@@ -168,6 +157,7 @@ class MyHandler( BaseHTTPRequestHandler ):
         global anShot
         global game
         global gLogic
+        global status
         # hanle post request
         # parse the URL to get the path and form data
         parsed  = urlparse( self.path );
@@ -462,6 +452,19 @@ class MyHandler( BaseHTTPRequestHandler ):
             except:
                 self.send_error(400, 'Invalid JSON data')
                 print(e.msg)
+
+        elif parsed.path in ['/gameOver']:  
+
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            response = {
+                'num': status
+            }
+
+            content = json.dumps(response).encode('utf-8')
+            self.send_header = ("Content-Length", str(len(content)))
+            self.end_headers()
+            self.wfile.write(content)
 
         
             

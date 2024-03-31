@@ -125,7 +125,7 @@ class GameLogic():
         self.playerTwoRange = -1
         self.playerTwoBallCount = 7
 
-        self.currrentPlayerID = 0
+        self.currentPlayerID = 0
 
     def setCurrentPlayer(self, playerID):
         self.currentPlayerID = playerID
@@ -164,11 +164,16 @@ class GameLogic():
 
 
         if diffrence > 0:
+
             # add helper function
             isCueBallSunk = self.isCueBallSunk(beforeLen, afteridlen)
             isEigthBallSunk = self.isEigthBallSunk(afteridlen)
+            
+            if self.playerOneRange == -1:
+                ballNum = self.firstBallSunk()
+                self.setBallRange(ballNum)
 
-            if isEigthBallSunk:
+            if isEigthBallSunk: # and more then just 8 ball left for player
                 return 8
                 # end game and determine winner
 
@@ -178,11 +183,59 @@ class GameLogic():
                     # switch player turn
                 # else set switch 
 
-                # if currentPlayer ball sunk current player turn again
+            # if currentPlayer ball sunk current player turn again
                     # update ball count for both player
-                
+        
+        print("P1BBCount: ", self.playerOneBallCount, "ID: ", self.playerOneRange)
+        print("P2BBCount: ", self.playerTwoBallCount, "ID: ", self.playerTwoRange)
 
+        self.playerOneBallCount = self.ballRangeCount(self.playerOneRange)
+        self.playerTwoBallCount = self.ballRangeCount(self.playerTwoRange)
 
+        print("P1ABCount: ", self.playerOneBallCount)
+        print("P2ABCount: ", self.playerTwoBallCount)
+
+        self.ballID.clear()
+        self.newBallIDS.clear()
+
+        
+        return 0
+
+    def firstBallSunk(self):
+        firstId = 0
+        missing = [id for id in self.ballID if id not in self.newBallIDS];
+
+        for i in range(len(missing)):
+            if missing[i] != 0 or missing[i] != 8:
+                print(missing)
+                if missing is not None:
+                    firstId = missing[0]
+
+        return firstId
+
+    def setBallRange(self, ballNum):
+
+        if ballNum > 0 and ballNum < 8:
+            if self.currentPlayerID == 0:
+                self.setRange(0, 0)
+                self.setRange(1, 1)
+            elif self.currentPlayerID == 1:
+                self.setRange(1, 0)
+                self.setRange(0, 1)
+        
+        if ballNum > 8 and ballNum < 16:
+            if self.currentPlayerID == 0:
+                self.setRange(0, 1)
+                self.setRange(1, 0)
+            elif self.currentPlayerID == 1:
+                self.setRange(1, 1)
+                self.setRange(0, 0)
+
+    def setRange(self, playerID, playerRange):
+        if playerID == 0:
+            self.playerOneRange = playerRange
+        elif playerID == 1:
+            self.playerTwoRange = playerRange
 
     def isCueBallSunk(self, beforeLen, afterLen):
 
@@ -211,23 +264,15 @@ class GameLogic():
 
     # def addCueBall():
 
-    # def playerTurn(self, playerNum):
 
-
-    def setRange(self, playerID, playerRange):
-        if playerID == 0:
-            self.playerOneRange = playerRange
-        elif playerID == 1:
-            self.playerTwoRange = playerRange
-
-    def ballRange(self, playerRange):
+    def ballRangeCount(self, playerRange):
         counter = 0
-        for i in range(len(newBallIDS)):
+        for i in range(len(self.newBallIDS)):
             if playerRange == 0:
-                if newBallIDS[i] > 0 and newBallIDS[i] <= 7:
+                if self.newBallIDS[i] > 0 and self.newBallIDS[i] <= 7:
                     counter += 1
             elif playerRange == 1:
-                if newBallIDS[i] > 8 and newBallIDS[i] <= 15:
+                if self.newBallIDS[i] > 8 and self.newBallIDS[i] <= 15:
                     counter += 1
 
         return counter
