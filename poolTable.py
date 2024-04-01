@@ -182,7 +182,13 @@ class GameLogic():
 
         diffrence = beforeLen - afteridlen
 
-        playerBallCount = self.ballRangeCount(self.currentPlayerID)
+        if self.currentPlayerID == self.playerOne:
+            playerBallCount = self.playerOneBallCount
+        elif self.currentPlayerID == self.playerTwo:
+            playerBallCount = self.playerTwoBallCount
+
+
+        
 
         print("Diffrence: ", diffrence)
         print("Before Current Player: ", self.currentPlayerID)
@@ -201,13 +207,16 @@ class GameLogic():
                 self.setBallRange(ballNum)
                 self.playerOneBallCount = self.ballRangeCount(self.playerOneRange)
                 self.playerTwoBallCount = self.ballRangeCount(self.playerTwoRange)
-            
+
+
+        
             print("Player One range: ", self.playerOneRange)
             print("Player Two range: ", self.playerTwoRange)
             print("p Current player Ball Count: ", playerBallCount)
 
 
             # add helper function
+            # playerBallCount = self.ballRangeCount(self.currentPlayerID)
             isCueBallSunk = self.isCueBallSunk(beforeLen, afteridlen)
             isEigthBallSunk = self.isEigthBallSunk(afteridlen)
             print("rah Current player Ball Count: ", playerBallCount)
@@ -230,6 +239,7 @@ class GameLogic():
 
                 if (self.playerOneBallCount - playerBallCount) == 0 and isCueBallSunk:
                     print("WHY HIT 1, bCount: ", playerBallCount)
+                    print("WHY HIT 1, bCount: ", playerBallCount)
                     self.switchPlayer()
                     # hit = 1
 
@@ -240,11 +250,6 @@ class GameLogic():
                     print("WHY HIT 2, bCount: ", playerBallCount)
                     self.switchPlayer()
                     # hit = 1
-              
-            # elif isCueBallSunk:
-            #     self.switchPlayer()
-                # reset cueBall
-            
 
             if self.currentPlayerID == self.playerOne:
                 print("HIT OUT")
@@ -265,11 +270,16 @@ class GameLogic():
         
         # print("P1BBCount: ", self.playerOneBallCount, "ID: ", self.playerOneRange)
         # print("P2BBCount: ", self.playerTwoBallCount, "ID: ", self.playerTwoRange)
+
+        if self.currentPlayerID == self.playerOne:
+            playerBallCount = self.ballRangeCount(self.playerOneRange)
+        elif self.currentPlayerID == self.playerTwo:
+            playerBallCount = self.ballRangeCount(self.playerTwoRange)  
+            
         self.playerOneBallCount = self.ballRangeCount(self.playerOneRange)
         self.playerTwoBallCount = self.ballRangeCount(self.playerTwoRange)
 
-        playerBallCount = self.ballRangeCount(self.currentPlayerID)
-
+        
 
         print("\nAfter Current Player: ", self.currentPlayerID)
         print("After player One Ball Count: ", self.playerOneBallCount)
