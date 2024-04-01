@@ -95,23 +95,22 @@
             z-index: -1;
         }
 
-        #x, #y {
-    z-index: 3;
-    position: fixed;
-    bottom: 0;
-}
-
-#x {
-    left: 0;
-}
-
-#y {
-    left: 60px; /* Adjust this value so it doesn't overlap with #x */
-}
+        #playerNames {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 40px 50px; /* Adjust padding as needed */
+            z-index: 10; /* Ensure it's above other elements */
+        }
 
     </style>
 </head>
 <body>
+
+    <div id="playerNames">
+        <div>Player 1: <span id="pOneName"></span></div>
+        <div>Player 2: <span id="pTwoName"></span></div> 
+    </div>
 
     <div id="container"  onmousemove="trackit(event);">
         <svg id="lines" class="fullPane""></svg>
@@ -122,15 +121,20 @@
         </div>
     </div>
 
-    <object id="content" ></object>
-
-    <!-- <button class="buttonTL" onclick="trackon()">Top Left Button</button> -->
-
-    <button class="buttonBM" onclick="trackon()">Bottom Center Button</button>
-    <div id="x" style="z-index: 3; position: fixed; bottom: 0; left: 0;">X: <span id="valx">0</span></div>
-    <div id="y" style="z-index: 3; position: fixed; bottom: 0; left: 50px;">Y: <span id="valy">0</span></div>
 
 
+    <script>
+        $(document).ready(function () {
+            const urlParam = new URLSearchParams(window.location.search);
+            // alert(urlParam)
+            const pOneName = urlParam.get('player1');
+            const pTwoName = urlParam.get('player2');
+            // alert('Player 1: ' + pOneName + '\nPlayer 2: ' + pTwoName);
+
+            $("#pOneName").text(pOneName);
+            $("#pTwoName").text(pTwoName);
+        });
+    </script>
 
 </body>
 </html>

@@ -183,22 +183,26 @@ class GameLogic():
         diffrence = beforeLen - afteridlen
 
         playerBallCount = self.ballRangeCount(self.currentPlayerID)
+        print(diffrence)
 
 
         if diffrence > 0:
+            print(self.playerOneRange)
 
             if self.playerOneRange == -1:
+                print("HIT range setter")
                 ballNum = self.firstBallSunk()
+                print(ballNum)
                 self.setBallRange(ballNum)
 
             # add helper function
             isCueBallSunk = self.isCueBallSunk(beforeLen, afteridlen)
             isEigthBallSunk = self.isEigthBallSunk(afteridlen)
             
-            if isEigthBallSunk and playerOneBallCount == 0: # and more then just 8 ball left for player
+            if isEigthBallSunk and self.playerOneBallCount == 0: # and more then just 8 ball left for player
                 return 1 #player one winner
 
-            elif isEigthBallSunk and playerTwoBallCount == 0:
+            elif isEigthBallSunk and self.playerTwoBallCount == 0:
                 return 2 #player two winner
 
             elif isEigthBallSunk:
@@ -209,6 +213,7 @@ class GameLogic():
             # if cueball sunk and playerball sunk
             if self.currentPlayerID == self.playerOne:
                 if (self.playerOneBallCount - playerBallCount) > 0 and isCueBallSunk:
+
                     hit = 1
                     # reset cueBall
 
@@ -245,7 +250,9 @@ class GameLogic():
         self.playerTwoBallCount = self.ballRangeCount(self.playerTwoRange)
 
         print("P1ABCount: ", self.playerOneBallCount)
+        print(self.ballID)
         print("P2ABCount: ", self.playerTwoBallCount)
+        print(self.newBallIDS)
 
         self.ballID.clear()
         self.newBallIDS.clear()
@@ -260,13 +267,10 @@ class GameLogic():
     # temp code, need to do this check in the cueBall method in Physics
     def firstBallSunk(self):
         firstId = 0
-        missing = [id for id in self.ballID if id not in self.newBallIDS];
+        missing = [id for id in self.ballID if id not in self.newBallIDS and id != 0 and id != 8];
 
-        for i in range(len(missing)):
-            if missing[i] != 0 or missing[i] != 8:
-                print(missing)
-                if missing is not None:
-                    firstId = missing[0]
+        if missing: 
+            firstId = missing[0]
 
         return firstId
 
@@ -334,6 +338,21 @@ class GameLogic():
                     counter += 1
 
         return counter
+
+    def highLow(self):
+        pOneRange = ""
+        pTwoRange = ""
+
+        if self.playerOneRange == 0:
+            pOneRange = "Low"
+            pTwoRange = "High"
+
+        elif self.playerOneRange == 1:
+            pOneRange = "High"
+            pTwoRange = "Low"
+
+        return pOneRange, pTwoRange
+
 
 
 

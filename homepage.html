@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <!-- <script src="animate.js"></script> -->
+
+    <style>
+        body, html {
+          height: 100%;
+          margin: 0;
+          font-family: 'Arial', sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
+
+        .banner h1 {
+          font-size: 4rem;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          color: #009578; /* Feel free to choose your color */
+          font-weight: bold;
+          text-shadow: 2px 2px #000;
+        }
+
+        .name-inputs input {
+          margin: 10px;
+          padding: 10px;
+          font-size: 1rem;
+        }
+
+        #playGame {
+          padding: 10px 20px;
+          font-size: 1.2rem;
+          background-color: #009578;
+          color: white;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        #playGame:disabled {
+          background-color: #ccc;
+          cursor: default;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="banner">  
+        <h1>Pool Game</h1>
+    </div>
+
+    <form id="homeForm" action="poolTable.html" method="GET">
+        <div class="name-inputs">
+            <input type="text" name="player1" id="player1" placeholder="Player One Name" required>
+            <input type="text" name="player2" id="player2" placeholder="Player Two Name" required>
+        </div>
+        
+        <button type="submit" id="playGame"">Play Game</button>
+    </form>
+        
+
+
+</body>
+
+<script>
+    function submitForm() {
+    const player1 = encodeURIComponent(document.getElementById('player1').value);
+    const player2 = encodeURIComponent(document.getElementById('player2').value);
+    location.href = `poolTable.html?player1=${player1}&player2=${player2}`;
+}
+</script>
+</html>

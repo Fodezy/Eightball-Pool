@@ -37,41 +37,19 @@ $('#poolTable').on('mouseover', 'circle', function(e){
 
 function newShot(id, e) 
 {
-    
-    // {
-        // alert("NEWSHOT id: " + id)
-
         if(id == 0)
         {
             cueFound = 1;
             var svgElement = $('#poolTable svg').get(0); // Get the SVG element
-
-
-            // cueX = 629;
-            // cueY = 1589;
-
 
             $('#poolTable').css('zIndex', -1); // Use .css method to change z-index
             $('#lines').css('zIndex', 1);
             // alert("Hit")
             svg = document.querySelector("#lines");
 
-
-
-            // let pos = svg.createSVGPoint();
-            // pos.x = e.clientX;
-            // pos.y = e.clientY;
-
-            // let ctm = svg.getScreenCTM().inverse();
-            // pos = pos.matrixTransform(ctm);
-
-            // cueX = pos.x;
-            // cueY = pos.y;
-
-            // alert("Cuex: " + cueX + "\nCueY: " + cueY)
-
             setDrawing(svg);
-        } else if (gameOver == 8) {
+        } else if (gameOver == 8) 
+        {
             alert("GAME OVER")
         }
             else {
@@ -86,12 +64,14 @@ function newShot(id, e)
 function setDrawing (svg) {
 
     function velocity(e) {
+
+        // change vel calc
         let endPoint = objMousePosSVG(e);
 
         let vel = {}
 
-        vel.x = -(endPoint.x - cueX) * 15;
-        vel.y = -(endPoint.y - cueY) * 15;
+        vel.x = -(endPoint.x - cueX) * 9;
+        vel.y = -(endPoint.y - cueY) * 9;
 
         let velLen = Math.sqrt((vel.x * vel.x) + (vel.y * vel.y));
 
@@ -125,8 +105,6 @@ function setDrawing (svg) {
         cueY = objLine.y1;
         objLine.x2 = mPos.x;
         objLine.y2 = mPos.y;
-        // alert("x1: " + objLine.x1 + "\ny1: " + objLine.y1)
-        // alert("x2: " + objLine.x2 + "\ny2: " + objLine.y2)
         lineEl = drawLine(objLine, svg);
     });
 
@@ -209,7 +187,7 @@ function setDrawing (svg) {
                             }
 
                             index++;
-                            setTimeout(displayPart, 15);
+                            setTimeout(displayPart, 10);
                         }
                     }
                     displayPart();
@@ -242,6 +220,39 @@ function setDrawing (svg) {
             })
     }
 
+    var pOneRangeAdded = false;
+    var pTwoRangeAdded = false;
+    function highLow() {
+        $.ajax({
+            url: '/highLow',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                // alert("HIT")
+                var pOneRange = response.pOneRange;
+                var pTwoRange = response.pTwoRange;
+
+                if (!pOneRangeAdded) {
+                    $("#pOneName").append(" - " + pOneRange);
+                    pOneRangeAdded = true; // Set the flag to true to prevent future updates
+                }
+
+                // Check if the range has already been added for player 2
+                if (!pTwoRangeAdded) {
+                    $("#pTwoName").append(" - " + pTwoRange);
+                    pTwoRangeAdded = true; // Set the flag to true to prevent future updates
+                }
+
+                // alert("One: " + pOneRange + "\nTwo: " + pTwoRange)
+            }, 
+            error: function(error, status) {
+                alert("Error in highLow:", error, "Status:", status)
+
+            }
+
+        })
+    }
+
     function isGameOver(num) {
         $.ajax({
             url: '/gameOver',
@@ -249,7 +260,9 @@ function setDrawing (svg) {
             dataType: 'json',
             data: JSON.stringify({num: num}),
             success: function(response) {
+                gameOver = response.num
                 alert(response.num)
+                alert(gameOver)
             },
             error: function(error, status) {
                 alert("ERROR")
@@ -269,6 +282,7 @@ function setDrawing (svg) {
             postCalVel( {x: distanceVel.x, y: distanceVel.y} )       
             .then(response => {
                 getSVGs().then(lastPart => {
+                    highLow();
                     writeNewStarter(lastPart);
                     $('#poolTable').css('zIndex', 1); // Use .css method to change z-index
                     $('#lines').css('zIndex', -1);

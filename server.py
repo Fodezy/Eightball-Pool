@@ -26,6 +26,7 @@ class MyHandler( BaseHTTPRequestHandler ):
     def do_GET(self):
         # parse the URL to get the path and form data
         parsed  = urlparse( self.path );
+        fPath = parsed.path
         # print(parsed)
 
 
@@ -84,9 +85,21 @@ class MyHandler( BaseHTTPRequestHandler ):
         # If the file does not exist or the path does not match, return 404
             else: self.send_error(404, "File Not Found: %s" % self.path)
 
+        elif parsed.path in ['/homepage.html']:
+            try:
+                with open('homepage.html') as fp:
+                    content = fp.read()
+                    self.send_response(200)
+                    self.send_header("Content-type", 'text/html')
+                    self.send_header("Content-length", len(content))
+                    self.end_headers()
+                    self.wfile.write(bytes(content, 'utf-8'))
+            except FileNotFoundError:
+                self.send_error(404, "file not found: homepage.html")
+
         elif parsed.path in [ '/poolTable.html' ]:
 
-            fp = open('.' + self.path)
+            fp = open('.' + parsed.path)
             content = fp.read()
 
             self.send_response(200)
@@ -402,17 +415,6 @@ class MyHandler( BaseHTTPRequestHandler ):
                 table = game.shoot("Game 1", "Eric", table, velx, vely)
                 status = gLogic.afterSatus(table)
 
-                # print(table)
-                # print(table)
-
-                # gLogic.isBallSunk()
-                # print(table)
-                
-
-
-                # r = Retreive()
-                # vel = r.calculateVel(velx, vely)
-
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
@@ -425,6 +427,30 @@ class MyHandler( BaseHTTPRequestHandler ):
             except json.JSONDecodeError as e:
                 self.send_error(400, 'Invalid JSON data')
                 print(e.msg)
+
+        elif parsed.path in ['/highLow']:
+            try: 
+                content_length = int(self.headers['Content-Length'])
+                data = self.rfile.read(content_length).decode('utf-8')
+                
+
+                pOneRange, pTwoRange = gLogic.highLow()
+
+                response = {
+                    "pOneRange": pOneRange,
+                    "pTwoRange": pTwoRange
+                }
+                response_json = json.dumps(response) 
+                response_bytes = response_json.encode('utf-8')  
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header("Content-Length", str(len(response_bytes)))
+                self.end_headers()
+                self.wfile.write(response_bytes)
+            except Exception as e:
+                self.send_error(500, 'Internal Server Error')
+                print("Error handling /highLow:", str(e))
 
 
         elif parsed.path in ['/writeStarter']:
@@ -493,4 +519,5 @@ if __name__ == "__main__":
     print(f'http://localhost:{int(sys.argv[1])}')
     print(f'http://localhost:{int(sys.argv[1])}/shoot.html')
     print(f'http://localhost:{int(sys.argv[1])}/poolTable.html')
+    print(f'http://localhost:{int(sys.argv[1])}/homepage.html')
     httpd.serve_forever();
