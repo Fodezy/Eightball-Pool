@@ -20,7 +20,6 @@ $(document).ready(function(){
         dataType: 'html',
         success: function(response)
         {
-            
             $('#poolTable').html(response);
             // var svg = document.querySelector('#lines');
         }
@@ -30,8 +29,6 @@ $('#poolTable').on('mouseover', 'circle', function(e){
 
     // alert("HIT")
     var id = $(this).attr('id');
-    // var cx = $(this).attr('cx');
-    // var cy = $(this).attr('cy');
     newShot(id, e)
 })
 
@@ -61,17 +58,15 @@ function newShot(id, e)
 
 
 
-            let pos = svg.createSVGPoint();
-            // alert("HIT")
-            pos.x = e.clientX;
-            pos.y = e.clientY;
-            let ctm = svg.getScreenCTM().inverse();
+            // let pos = svg.createSVGPoint();
+            // pos.x = e.clientX;
+            // pos.y = e.clientY;
 
-            // alert("HIT")
-            pos = pos.matrixTransform(ctm);
+            // let ctm = svg.getScreenCTM().inverse();
+            // pos = pos.matrixTransform(ctm);
 
-            cueX = pos.x;
-            cueY = pos.y;
+            // cueX = pos.x;
+            // cueY = pos.y;
 
             // alert("Cuex: " + cueX + "\nCueY: " + cueY)
 
@@ -124,10 +119,14 @@ function setDrawing (svg) {
     svg.addEventListener("mousedown", (e) => 
     {
         mPos = objMousePosSVG(e);
-        objLine.x1 = cueX;
-        objLine.y1 = cueY;
+        objLine.x1 = mPos.x;
+        objLine.y1 = mPos.y;
+        cueX = objLine.x1;
+        cueY = objLine.y1;
         objLine.x2 = mPos.x;
         objLine.y2 = mPos.y;
+        // alert("x1: " + objLine.x1 + "\ny1: " + objLine.y1)
+        // alert("x2: " + objLine.x2 + "\ny2: " + objLine.y2)
         lineEl = drawLine(objLine, svg);
     });
 
@@ -233,6 +232,7 @@ function setDrawing (svg) {
                 data: stringSVG,
                 success: function(response) {
                     // alert("Success: " + response)
+                    $('#poolTable').html(response);
 
                 },
                 error: function(status, error){
@@ -250,7 +250,6 @@ function setDrawing (svg) {
             data: JSON.stringify({num: num}),
             success: function(response) {
                 alert(response.num)
-                // gameOver =  response.num
             },
             error: function(error, status) {
                 alert("ERROR")
@@ -264,6 +263,7 @@ function setDrawing (svg) {
         if(lineEl)
         {   
             lineEl.remove();
+            lineEl = null
             let distanceVel = velocity(e);
 
             postCalVel( {x: distanceVel.x, y: distanceVel.y} )       
