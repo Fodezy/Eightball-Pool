@@ -80,6 +80,7 @@ class AnimateShot():
 
     def __init__(self):
         self.db = Physics.Database(reset = True)
+        self.cueBallString = 0
 
     def initDB(self, table):
         self.db.createDB()
@@ -87,16 +88,6 @@ class AnimateShot():
 
         game = Physics.Game(gameName="Game 1", player1Name="Eric", player2Name="Peter")
         return game
-
-    # def write_svg(table_id, table):
-    #     directory = "svgFiles"
-    #     if not os.path.exists(directory):
-    #         os.makedirs(directory)
-
-    #     # Use an integer for the filename (zero-padded)
-    #     filename = f"{directory}/table{table_id:05d}.svg"
-    #     with open(filename, "w") as fp:
-    #         fp.write(table.svg())
 
     def getTable(self, table):
     
@@ -108,6 +99,29 @@ class AnimateShot():
 
         with open("table-2.svg", "a") as fp:
             fp.write(svgContent)
+
+    def writeCueBall(self, svgString, table):
+        newBallIDS = []
+        isCueBall = True
+        newSVG = svgString
+
+        for obj in table:
+            if obj is not None:
+                if isinstance(obj, Physics.RollingBall):
+                    newBallIDS.append(obj.obj.still_ball.number)
+
+                elif isinstance(obj, Physics.StillBall):
+                    newBallIDS.append(obj.obj.rolling_ball.number)
+
+        if 0 not in newBallIDS:
+            print("hit: ", obj)  
+            pos = Physics.Coordinate(675, 2025)
+            sb = Physics.StillBall(0, pos) # sets the cue ball
+            table += sb
+            newSVG = table.svg()
+
+        return table, newSVG
+
 
 class GameLogic():
 
@@ -127,12 +141,18 @@ class GameLogic():
 
         self.currentPlayerID = 0
 
+        self.gameWinner = 0
+
     def setCurrentPlayer(self, playerID):
         self.currentPlayerID = playerID
 
-    # def getCurrentPlayer(self):
-    #     return self.currentPlayerID
+    def switchPlayer(self):
 
+        if self.currentPlayerID == 0:
+            self.currentPlayerID = 1
+        elif self.currentPlayerID == 1:
+            self.currentPlayerID = 0
+        
 
     def shotStatus(self, table):
         ballID = []
@@ -162,29 +182,61 @@ class GameLogic():
 
         diffrence = beforeLen - afteridlen
 
+        playerBallCount = self.ballRangeCount(self.currentPlayerID)
+
 
         if diffrence > 0:
+
+            if self.playerOneRange == -1:
+                ballNum = self.firstBallSunk()
+                self.setBallRange(ballNum)
 
             # add helper function
             isCueBallSunk = self.isCueBallSunk(beforeLen, afteridlen)
             isEigthBallSunk = self.isEigthBallSunk(afteridlen)
             
-            if self.playerOneRange == -1:
-                ballNum = self.firstBallSunk()
-                self.setBallRange(ballNum)
+            if isEigthBallSunk and playerOneBallCount == 0: # and more then just 8 ball left for player
+                return 1 #player one winner
 
-            if isEigthBallSunk: # and more then just 8 ball left for player
+            elif isEigthBallSunk and playerTwoBallCount == 0:
+                return 2 #player two winner
+
+            elif isEigthBallSunk:
+                # end game and determine winner by switching player id
+                self.switchPlayer()
                 return 8
-                # end game and determine winner
 
-            # if isCueBallSunk:
-                # re add cueball to table
-                # if diffrence == 1:
-                    # switch player turn
-                # else set switch 
+            # if cueball sunk and playerball sunk
+            if self.currentPlayerID == self.playerOne:
+                if (self.playerOneBallCount - playerBallCount) > 0 and isCueBallSunk:
+                    hit = 1
+                    # reset cueBall
 
-            # if currentPlayer ball sunk current player turn again
-                    # update ball count for both player
+            elif self.currentPlayerID == self.playerTwo:
+                if (self.playerTwoBallCount - playerBallCount) > 0 and isCueBallSunk:
+                    hit = 1
+                    # reset cueBall
+              
+            elif isCueBallSunk:
+                self.switchPlayer()
+                # reset cueBall
+            
+
+            if self.currentPlayerID == self.playerOne:
+                if (self.playerOneBallCount - playerBallCount) == 0:
+                    self.switchPlayer()
+
+            elif self.currentPlayerID == self.playerTwo:
+                if (self.playerTwoBallCount - playerBallCount) == 0:
+                    self.switchPlayer()
+
+
+            
+
+        else:
+            # switch player turn 
+            self.switchPlayer()
+
         
         print("P1BBCount: ", self.playerOneBallCount, "ID: ", self.playerOneRange)
         print("P2BBCount: ", self.playerTwoBallCount, "ID: ", self.playerTwoRange)
@@ -201,6 +253,11 @@ class GameLogic():
         
         return 0
 
+    # def gameWinner(self, playerID):
+        # if 
+
+
+    # temp code, need to do this check in the cueBall method in Physics
     def firstBallSunk(self):
         firstId = 0
         missing = [id for id in self.ballID if id not in self.newBallIDS];
@@ -239,7 +296,7 @@ class GameLogic():
 
     def isCueBallSunk(self, beforeLen, afterLen):
 
-        print(self.newBallIDS)
+        # print(self.newBallIDS)
 
         for j in range(0, afterLen):
             if self.newBallIDS[j] == 0:
@@ -266,6 +323,7 @@ class GameLogic():
 
 
     def ballRangeCount(self, playerRange):
+
         counter = 0
         for i in range(len(self.newBallIDS)):
             if playerRange == 0:

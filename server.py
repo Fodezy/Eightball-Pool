@@ -115,10 +115,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
             with open('table-2.svg', 'r') as fp:
                 content = fp.read()
-                # contentSplit = content.split(':,:')
-
-            # for content in contentSplit:
-                # print(content)
             
 
             self.send_response(200)
@@ -438,8 +434,11 @@ class MyHandler( BaseHTTPRequestHandler ):
 
                 # print(svg)
 
+                #  send svg to helper function 
+                table, newSvg = anShot.writeCueBall(svg, table)
+
                 with open(f"table-1.svg", "w") as file:
-                    file.write(svg);
+                    file.write(newSvg);
 
                 fp = open("table-2.svg", "w")
                 fp.write("")
@@ -447,10 +446,11 @@ class MyHandler( BaseHTTPRequestHandler ):
 
                 self.send_response(200)
                 self.send_header('Content-type', 'html')
+                self.send_header("Content-Length", str(len(newSvg.encode('utf-8'))))
                 self.end_headers()
-                self.wfile.write(b'SVG script received successfully')
+                self.wfile.write(newSvg.encode('utf-8'))
             except:
-                self.send_error(400, 'Invalid JSON data')
+                self.send_error(400, 'Invalid html data')
                 print(e.msg)
 
         elif parsed.path in ['/gameOver']:  
