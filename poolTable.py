@@ -49,7 +49,7 @@ class SetTablePos():
         initTable.setRack(644, 622, 2) #ball one
         initTable.setRack(705, 622, 3) #ball one
 
-        # row three
+        # # row three
         initTable.setRack(675, 569, 8) #ball one
         initTable.setRack(613, 569, 4) #ball one
         initTable.setRack(736, 569, 5) #ball one
@@ -183,21 +183,35 @@ class GameLogic():
         diffrence = beforeLen - afteridlen
 
         playerBallCount = self.ballRangeCount(self.currentPlayerID)
-        print(diffrence)
+
+        print("Diffrence: ", diffrence)
+        print("Before Current Player: ", self.currentPlayerID)
+        print("Before player One Ball Count: ", self.playerOneBallCount)
+        print("Before player Two Ball Count: ", self.playerTwoBallCount)
+        print("Before Current player Ball Count: ", playerBallCount)
+
 
 
         if diffrence > 0:
-            print(self.playerOneRange)
 
             if self.playerOneRange == -1:
                 print("HIT range setter")
                 ballNum = self.firstBallSunk()
-                print(ballNum)
+                print("FIRST BALL SUNK: ", ballNum)
                 self.setBallRange(ballNum)
+                self.playerOneBallCount = self.ballRangeCount(self.playerOneRange)
+                self.playerTwoBallCount = self.ballRangeCount(self.playerTwoRange)
+            
+            print("Player One range: ", self.playerOneRange)
+            print("Player Two range: ", self.playerTwoRange)
+            print("p Current player Ball Count: ", playerBallCount)
+
 
             # add helper function
             isCueBallSunk = self.isCueBallSunk(beforeLen, afteridlen)
             isEigthBallSunk = self.isEigthBallSunk(afteridlen)
+            print("rah Current player Ball Count: ", playerBallCount)
+
             
             if isEigthBallSunk and self.playerOneBallCount == 0: # and more then just 8 ball left for player
                 return 1 #player one winner
@@ -212,47 +226,60 @@ class GameLogic():
 
             # if cueball sunk and playerball sunk
             if self.currentPlayerID == self.playerOne:
-                if (self.playerOneBallCount - playerBallCount) > 0 and isCueBallSunk:
+                print("huh Current player Ball Count: ", playerBallCount)
 
-                    hit = 1
-                    # reset cueBall
+                if (self.playerOneBallCount - playerBallCount) == 0 and isCueBallSunk:
+                    print("WHY HIT 1, bCount: ", playerBallCount)
+                    self.switchPlayer()
+                    # hit = 1
 
             elif self.currentPlayerID == self.playerTwo:
-                if (self.playerTwoBallCount - playerBallCount) > 0 and isCueBallSunk:
-                    hit = 1
-                    # reset cueBall
+                print("[]] Current player Ball Count: ", playerBallCount)
+
+                if (self.playerTwoBallCount - playerBallCount) == 0 and isCueBallSunk:
+                    print("WHY HIT 2, bCount: ", playerBallCount)
+                    self.switchPlayer()
+                    # hit = 1
               
-            elif isCueBallSunk:
-                self.switchPlayer()
+            # elif isCueBallSunk:
+            #     self.switchPlayer()
                 # reset cueBall
             
 
             if self.currentPlayerID == self.playerOne:
+                print("HIT OUT")
                 if (self.playerOneBallCount - playerBallCount) == 0:
+                    print("HIT IN 1, bCount: ", playerBallCount)
                     self.switchPlayer()
 
             elif self.currentPlayerID == self.playerTwo:
+                print("HIT OUT")
                 if (self.playerTwoBallCount - playerBallCount) == 0:
+                    print("HIT IN 2, bCount: ", playerBallCount)
                     self.switchPlayer()
-
-
-            
 
         else:
             # switch player turn 
             self.switchPlayer()
 
         
-        print("P1BBCount: ", self.playerOneBallCount, "ID: ", self.playerOneRange)
-        print("P2BBCount: ", self.playerTwoBallCount, "ID: ", self.playerTwoRange)
-
+        # print("P1BBCount: ", self.playerOneBallCount, "ID: ", self.playerOneRange)
+        # print("P2BBCount: ", self.playerTwoBallCount, "ID: ", self.playerTwoRange)
         self.playerOneBallCount = self.ballRangeCount(self.playerOneRange)
         self.playerTwoBallCount = self.ballRangeCount(self.playerTwoRange)
 
-        print("P1ABCount: ", self.playerOneBallCount)
-        print(self.ballID)
-        print("P2ABCount: ", self.playerTwoBallCount)
-        print(self.newBallIDS)
+        playerBallCount = self.ballRangeCount(self.currentPlayerID)
+
+
+        print("\nAfter Current Player: ", self.currentPlayerID)
+        print("After player One Ball Count: ", self.playerOneBallCount)
+        print("After player Two Ball Count: ", self.playerTwoBallCount)
+        print("After Current player Ball Count: ", playerBallCount)
+
+        # print("P1ABCount: ", self.playerOneBallCount)
+        # print(self.ballID)
+        # print("P2ABCount: ", self.playerTwoBallCount)
+        # print(self.newBallIDS)
 
         self.ballID.clear()
         self.newBallIDS.clear()
@@ -304,10 +331,10 @@ class GameLogic():
 
         for j in range(0, afterLen):
             if self.newBallIDS[j] == 0:
-                print("CueBall found: ", self.newBallIDS[j])
+                # print("CueBall found: ", self.newBallIDS[j])
                 return False
-            else:
-                print("CueBall not found: ")
+            # else:
+                # print("CueBall not found: ")
         
         return True
 
@@ -315,10 +342,10 @@ class GameLogic():
 
         for i in range(0, afterLen):
             if self.newBallIDS[i] == 8:
-                print("8 ball found: ", self.newBallIDS[i])
+                # print("8 ball found: ", self.newBallIDS[i])
                 return False
-            else:
-                print("8 ball not found: ")
+            # else:
+                # print("8 ball not found: ")
         
         return True
 

@@ -414,6 +414,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                 gLogic.shotStatus(table)
                 table = game.shoot("Game 1", "Eric", table, velx, vely)
                 status = gLogic.afterSatus(table)
+                print("Game Status: ", status)
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')

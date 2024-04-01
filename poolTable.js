@@ -52,7 +52,13 @@ function newShot(id, e)
         {
             alert("GAME OVER")
         }
-            else {
+        else if (gameOver == 1) {
+            alert("Player One Wins")
+        }
+        else if (gameOver == 2) {
+            alert("Player Two Wins")
+        }
+        else {
                 alert('Ball ID: ' + id + '\nPosition: (' + cx + ', ' + cy + ')');
             }
     // });
@@ -187,7 +193,7 @@ function setDrawing (svg) {
                             }
 
                             index++;
-                            setTimeout(displayPart, 10);
+                            setTimeout(displayPart, 15);
                         }
                     }
                     displayPart();
@@ -261,8 +267,8 @@ function setDrawing (svg) {
             data: JSON.stringify({num: num}),
             success: function(response) {
                 gameOver = response.num
-                alert(response.num)
-                alert(gameOver)
+                // alert(response.num)
+                // alert(gameOver)
             },
             error: function(error, status) {
                 alert("ERROR")
